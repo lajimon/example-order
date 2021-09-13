@@ -5,12 +5,12 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class MainController {
-    @GetMapping(value="/view/v1/items")
+    @GetMapping(value="/view/v1/items/all")
     public String main() {
         return "order/items/main";
     }
-    @GetMapping(value="/view/v1/item/{itemToken}")
+    @GetMapping(value="/view/v1/items/{itemToken}")
     public String main(@PathVariable("itemToken") String itemToken) {
-        return "order/item/main";
+        return "order/items/item-token";
     }
 }
