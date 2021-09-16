@@ -202,14 +202,14 @@
               <input type="hidden" name="sell_prc_consultation" value="">
               <input type="hidden" name="qd" value="">
               <input type="hidden" name="prdcpn_no" value="">
-              <div class="wrap_prd">
+              <div id="item" class="wrap_prd">
                 <div class="prdimg">
                   <div id="mimg_div" class="img">
                     <a href="javascript:zoomView('93C06A67AF6B87AA9F7A83DE8586C016', '600', '800');">
                       <div id="zoom_frame" style="position: relative;">
                         <div id="zoom_frame" style="position: relative;">
                           <div id="zoom_frame" style="position: relative;">
-                            <img id="mainImg" src="https://greatjlim.wisacdn.com/_data/product/202009/12/39fb2359e1b9c7bb70bd8b0a481f0389.png" width="100" height="100" jquery_pzoom="">
+                            <img id="mainImg" src="https://m.clicksports.co.kr/data/goods/21/03/12/8639/8639_detail_057.jpg" width="400" height="400" jquery_pzoom="">
                           </div>
                         </div>
                       </div>
@@ -222,7 +222,7 @@
                           <div aria-live="polite" class="slick-list draggable">
                             <div class="slick-track" role="listbox" style="opacity: 1; width: 306px; transform: translate3d(0px, 0px, 0px);">
                               <div class="slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false" tabindex="-1" role="option" aria-describedby="slick-slide00" style="width: 102px;">
-                                <img src="https://greatjlim.wisacdn.com/_data/product/202009/12/39fb2359e1b9c7bb70bd8b0a481f0389.png#addimg" alt="상품중이미지 썸네일" onmouseover="attatchAddImage(this, 500, 500)">
+                                <img src="https://m.clicksports.co.kr/data/goods/21/03/12/8639/8639_detail_057.jpg" alt="상품중이미지 썸네일" onmouseover="attatchAddImage(this, 500, 500)">
                               </div>
                               <div class="slick-slide slick-active" data-slick-index="1" aria-hidden="false" tabindex="-1" role="option" aria-describedby="slick-slide01" style="width: 102px;">
                                 <img src="https://greatjlim.wisacdn.com/_data/attach/202104/04/38c6f6e4d1d33e640af492a8ca2bb065.jpg#addimg" alt="부가이미지 썸네일" onmouseover="attatchAddImage(this, 500, 500)">
@@ -238,34 +238,44 @@
                   </div>
                 </div>
                 <div class="info">
-                  <h3 class="name">[정관장] 홍삼비력 50ml x 30포 </h3>
+                  <h3 class="name">{{ itemName }}</h3>
                   <div class="price">
-                    <del>40,000원</del>
+<!--                    <del>40,000원</del>-->
                     <span class="sell">
-                      <strong>34,800</strong>원
+                      <strong>{{ itemPrice }}</strong>원
                     </span>
                   </div>
-                  <p class="summary">일상의 화력을 UP하다</p>
+                  <p class="summary">{{ status }}</p>
                   <table class="list">
                     <colgroup>
                       <col style="width:30%;">
                       <col>
                     </colgroup>
-                    <tbody>
+                    <tbody><!--
                       <tr>
                         <th scope="row">배송비</th>
                         <td>3,500원</td>
-                      </tr>
+                      </tr>-->
                       <tr>
                         <th scope="row">수량</th>
                         <td>
                           <div class="box_qty">
-                            <input type="text" name="buy_ea" value="1" class="form_input" isplaceholderinited="true">
+                            <input type="text" name="buy_ea" v-bind:value="itemCount" class="form_input" isplaceholderinited="true">
                             <div class="btn_ea">
-                              <a href="javascript:eaChg(1);" class="ea_up"></a>
-                              <a href="javascript:eaChg(2);" class="ea_down"></a>
+                              <a class="ea_up" @click="qtyUp()"></a>
+                              <a class="ea_down" @click="qtyDown()"></a>
                             </div>
-                        </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr v-for="(itemOptionGroup, i) in itemOptionGroupList">
+                        <th scope="row">{{ itemOptionGroup.itemOptionGroupName }}</th>
+                        <td>
+                          <div class="box_qty">
+                            <select name="qd1_opacity" onchange="">
+                              <option v-for="(itemOption, j) in itemOptionGroup.itemOptionList" value="itemOption.itemOptionName">{{ itemOption.itemOptionName }}</option>
+                            </select>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -274,7 +284,7 @@
                     <div class="opt_total">
                       <span class="title">총금액</span>
                       <strong>
-                        <span class="sell_prc_str_total">34,800</span>원
+                        <span class="sell_prc_str_total">{{ getTotalPrice() }}</span>원
                       </strong>
                     </div>
                   </div>
@@ -330,7 +340,6 @@
                   <div class="detail_info">
                     <div class="wing-detail-more-area" data-height="300px" data-state="closed">
                       <div class="wing-detail-more-contents" style="height:300px;">
-                        <img title="Untitled-1.jpg" src="http://welfaremall.co.kr/file/image/2017/09/07/F_1504758233894.jpg">
                         <br style="clear: both;">
                         <br style="clear: both;">
                       </div>
@@ -551,4 +560,55 @@
       </div>
     </div>
   </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script type="text/javascript">
+    var item = new Vue({
+      el: "#item",
+      data: {
+        itemCount: 1,
+        itemName: "",
+        itemPrice: 0,
+        status: "",
+        itemOptionGroupList: []
+      },
+      created: function() {
+        var itemToken = window.location.pathname.split("/")[4];
+        var requestOption = {
+          method: "GET",
+          headers: {"Content-Type": "application/json", "Accept": "application/json"},
+        };
+
+        fetch("/api/v1/items/" + itemToken, requestOption)
+          .then(async response => {
+              const data = await response.json();
+              if (response.ok) {
+                return data;
+              } else {
+                throw new Error(JSON.stringify(data));
+              }
+            }).then((json) => {
+              console.log(json);
+              this.itemName = json.data.itemName;
+              this.itemPrice = json.data.itemPrice;
+              this.itemOptionGroupList = json.data.itemOptionGroupList;
+            }).catch(error => {
+              this.step = 0;
+              swal('오류', JSON.parse(error.message).err_msg, 'error');
+            });
+      },
+      methods: {
+        qtyUp: function() {
+          this.itemCount++;
+        },
+        qtyDown: function() {
+          if (this.itemCount > 1) {
+            this.itemCount--;
+          }
+        },
+        getTotalPrice: function() {
+          return this.itemPrice * this.itemCount;
+        }
+      }
+    });
+  </script>
 </html>
