@@ -21,7 +21,7 @@ spec:
         app: example-order
     spec:
       containers:
-      - image: 734268896595.dkr.ecr.ap-northeast-2.amazonaws.com/example-order:latest
+      - image: 734268896595.dkr.ecr.ap-northeast-2.amazonaws.com/example-order:v1
         imagePullPolicy: Always
         name: example-order
         command: 
